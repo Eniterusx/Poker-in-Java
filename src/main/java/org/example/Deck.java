@@ -11,12 +11,12 @@ public class Deck {
         }
     }
 
-    public void Restart(){
+    public void restart(){
         for (int i = 0; i < 52; i++) {
             deck[i]=new Card(i%13,symbols[i/13]);
         }
     }
-    public void Shuffle(){
+    public void shuffle(){
         Random rand = new Random();
             for(int i =0; i<52;i++){
                 int indexSwap = rand.nextInt(52);
@@ -26,7 +26,7 @@ public class Deck {
             }
     }
 
-    public void ShowOrder(){
+    public void showOrder(){
         for(int i=0;i<52;i++){
             deck[i].equals();
         }

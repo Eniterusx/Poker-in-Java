@@ -26,9 +26,9 @@ class PlayerTest {
     void royalFlush() {
         for (int i = 0; i < 5; i++) {
             hand[i].replace(12 - i, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
-        assertEquals(99999, player.RateHand(), "Royal flush expected");
+        assertEquals(99999, player.rateHand(), "Royal flush expected");
     }
 
     @Test
@@ -36,9 +36,9 @@ class PlayerTest {
     void straightFlush(){
         for(int i = 0; i < 5; i++){
             hand[i].replace(4-i, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
-        assertEquals(90400, player.RateHand(), "Straight flush expected");
+        assertEquals(90400, player.rateHand(), "Straight flush expected");
     }
 
     @Test
@@ -46,11 +46,11 @@ class PlayerTest {
     void fourOfAKind(){
         for(int i = 0; i < 4; i++){
             hand[i].replace(0, symbols[i]);
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(3, 's');
-        player.SwapCard(4, hand[4]);
-        assertEquals(80000, player.RateHand(), "Four of a kind expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(80000, player.rateHand(), "Four of a kind expected");
     }
 
     @Test
@@ -58,13 +58,13 @@ class PlayerTest {
     void fullHouse(){
         for(int i = 0; i < 3; i++){
             hand[i].replace(2, symbols[i]);
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         for(int i = 3; i < 5; i++){
             hand[i].replace(7, symbols[i-1]);
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
-        assertEquals(70207, player.RateHand(), "Full house expected");
+        assertEquals(70207, player.rateHand(), "Full house expected");
     }
 
     @Test
@@ -72,11 +72,11 @@ class PlayerTest {
     void flush(){
         for(int i = 0; i < 4; i++){
             hand[i].replace(i, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(12, 's');
-        player.SwapCard(4, hand[4]);
-        assertEquals(61200, player.RateHand(), "Flush expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(61200, player.rateHand(), "Flush expected");
     }
 
     @Test
@@ -84,11 +84,11 @@ class PlayerTest {
     void straight(){
         for(int i = 0; i < 4; i++){
             hand[i].replace(5+i, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(9, 'c');
-        player.SwapCard(4, hand[4]);
-        assertEquals(50900, player.RateHand(), "Straight expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(50900, player.rateHand(), "Straight expected");
     }
 
     @Test
@@ -97,13 +97,13 @@ class PlayerTest {
 
         for(int i = 0; i < 3; i++){
             hand[i].replace(12, symbols[i]);
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         for(int i = 3; i < 5; i++){
             hand[i].replace(i, symbols[i-1]);
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
-        assertEquals(41200, player.RateHand(), "Three of a kind expected");
+        assertEquals(41200, player.rateHand(), "Three of a kind expected");
     }
 
     @Test
@@ -111,15 +111,15 @@ class PlayerTest {
     void twoPairs(){
         for(int i = 0; i < 2; i++){
             hand[i].replace(0, 'c');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         for(int i = 2; i < 4; i++){
             hand[i].replace(12, 'd');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(5, 'd');
-        player.SwapCard(4, hand[4]);
-        assertEquals(31200, player.RateHand(), "Two pairs expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(31200, player.rateHand(), "Two pairs expected");
     }
 
     @Test
@@ -127,11 +127,11 @@ class PlayerTest {
     void pair(){
         for(int i = 0; i < 4; i++){
             hand[i].replace(i+4, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(5, 'c');
-        player.SwapCard(4, hand[4]);
-        assertEquals(20500, player.RateHand(), "Pair expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(20500, player.rateHand(), "Pair expected");
     }
 
     @Test
@@ -139,11 +139,11 @@ class PlayerTest {
     void highCard(){
         for(int i = 0; i < 4; i++){
             hand[i].replace(i, 's');
-            player.SwapCard(i, hand[i]);
+            player.swapCard(i, hand[i]);
         }
         hand[4].replace(12, 'c');
-        player.SwapCard(4, hand[4]);
-        assertEquals(11200, player.RateHand(), "High card expected");
+        player.swapCard(4, hand[4]);
+        assertEquals(11200, player.rateHand(), "High card expected");
     }
 
 }
