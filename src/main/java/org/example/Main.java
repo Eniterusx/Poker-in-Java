@@ -5,5 +5,7 @@ public class Main {
 
         int liczbaGraczy = 4;
         Table stolik = new Table(liczbaGraczy);
+        Deck talia = new Deck();
+        talia.ShowOrder();
     }
 }

@@ -11,4 +11,10 @@ public class Card {
         System.out.println(suit + "" + rank);
     }
 
+    //for tests only
+    public void replace(int r, char s){
+        rank = r;
+        suit = s;
+    }
+
 }

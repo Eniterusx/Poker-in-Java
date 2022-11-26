@@ -7,13 +7,13 @@ public class Deck {
     char[] symbols = {'c', 'd', 'h', 's'};
     public Deck() {
         for (int i = 0; i < 52; i++) {
-            deck[i]=new Card(i%13+1,symbols[i/13]);
+            deck[i]=new Card(i%13,symbols[i/13]);
         }
     }
 
     public void Restart(){
         for (int i = 0; i < 52; i++) {
-            deck[i]=new Card(i%13+1,symbols[i/13]);
+            deck[i]=new Card(i%13,symbols[i/13]);
         }
     }
     public void Shuffle(){

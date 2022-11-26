@@ -8,10 +8,9 @@ public class Table {
         talia = new Deck();
         liczbaGraczy=l;
         gracz = new Player[liczbaGraczy];
-        for(int i=0;i<l;i++){
+        for(int i = 0; i < l; i++){
             gracz[i]=new Player(i);
         }
-        talia.Shuffle();
     }
 
     public void Rozdaj(Deck talia){

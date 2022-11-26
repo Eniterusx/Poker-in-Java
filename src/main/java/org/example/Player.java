@@ -10,6 +10,10 @@ public class Player {
         }
     }
 
+    protected void SwapCard(int id, Card new_card){
+        hand[id] = new_card;
+    }
+
     public void ShowHand(){
         System.out.println("Ręka gracza " + (position+1) + ":");
         for(int i=0;i<5;i++){
@@ -38,7 +42,7 @@ public class Player {
             card_values[i] = 0;
         }
         for(int i = 0; i < 5; i++){
-            card_values[hand[i].rank-2]++;
+            card_values[hand[i].rank]++;
         }
 
         //Check, if there's at least one rank which appears more than once
@@ -55,7 +59,7 @@ public class Player {
         if(highest_card_amount>1){
             card_values[highest_card] = 0;
             for(int i = 12; i >= 0; i--){
-                if(card_values[i] == 2){
+                if(card_values[i] > 1){
                     second_highest_card = i;
                     break;
                 }
@@ -77,6 +81,7 @@ public class Player {
                 }
             }
         }
+
 
         //Find the combination
         //Royal flush
@@ -107,8 +112,8 @@ public class Player {
         else if (highest_card_amount == 3){
             return 40000 + 100 * highest_card;
         }
-        //Two pair
-        else if (second_highest_card > 0){
+        //Two pairs
+        else if (second_highest_card != -1){
             return 30000 + 100 * highest_card + second_highest_card;
         }
         //Pair
