@@ -2,6 +2,8 @@ package org.example;
 
 public class Game {
     public int playerCount;
+    public int activePlayerCount;
+    public int notFoldedPlayers;
     public int totalBet;
     public int currentBet;
     public int ante;
@@ -9,6 +11,7 @@ public class Game {
 
     public Game(int p, int a){
         playerCount = p;
+        activePlayerCount = playerCount;
         totalBet = 0;
         currentBet = 0;
         ante = a;
@@ -44,5 +47,11 @@ public class Game {
             return 0;
         }
         return -1;
+    }
+
+    public int fold(Player p){
+        betPerPlayer[p.position] = -1;
+        activePlayerCount -= 1;
+        return 0;
     }
 }

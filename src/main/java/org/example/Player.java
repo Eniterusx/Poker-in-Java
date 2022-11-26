@@ -1,15 +1,19 @@
 package org.example;
 
+import java.util.Scanner;
+
 public class Player {
     public Card[] hand = new Card[5];
     public int position;
     public int balance;
+    public boolean inGame;
     public Player(int o){
         position = o;
         for(int i=0;i<5;i++){
             hand[i] = new Card(0,'t');
         }
         balance = 1000;
+        inGame = true;
     }
 
     protected void swapCard(int id, Card new_card){
@@ -19,7 +23,7 @@ public class Player {
     public void showHand(){
         System.out.println("Ręka gracza " + (position+1) + ":");
         for(int i=0;i<5;i++){
-            hand[i].equals();
+            hand[i].equals(i);
         }
     }
 
@@ -124,5 +128,46 @@ public class Player {
         }
         //High card
         else return 10000 + 100 * highestCard;
+    }
+
+    public String input(Game game){
+        //wysyła karty gracza, jego hajs, stawki i hajs wszystkich graczy oraz czy spasowali
+        //komendy: call, bet, fold, dodać komendę info, pokazującą shit znowu
+        Scanner input = new Scanner(System.in);
+        System.out.println("Your turn, player " + position + "!");
+        int response;
+        while(true){
+            String command = input.next();
+            switch (command) {
+                case "call" -> {
+                    response = game.call(this);
+                    System.out.println("CALLED");
+                    //TODO: jeśli response jest błędny, poproś jeszcze raz (ale przy call to raczej nie trzeba(?)
+                    return "called";
+                }
+                case "bet" -> {
+                    System.out.println("How much do you want to raise the current pot?");
+                    String betString;
+                    int playerBet = -1;
+                    while (playerBet == -1) {
+                        betString = input.next();
+                        try {
+                            playerBet = Integer.parseInt(betString);
+                        } catch (Exception e) {
+                            System.out.println("Insert a number");
+                        }
+                    }
+                    response = game.bet(this, playerBet);
+                    //TODO: jeśli response jest błędny, poproś jeszcze raz
+                    return "betted";
+                }
+                case "fold" -> {
+                    System.out.println("FOLDED");
+                    response = game.fold(this);
+                    return "folded";
+                }
+                default -> System.out.println("Invalid command, try again");
+            }
+        }
     }
 }

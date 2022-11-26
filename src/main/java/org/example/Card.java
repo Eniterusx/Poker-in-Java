@@ -7,8 +7,8 @@ public class Card {
         rank = r;
         suit = s;
     }
-    public void equals(){
-        System.out.println(suit + "" + rank);
+    public void equals(int id){
+        System.out.println(id + ": " + suit + "" + rank);
     }
 
     //for tests only

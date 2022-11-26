@@ -22,13 +22,12 @@ public class Table {
     public void deal(Deck talia){
         int currentCard=0;
         for(int i=0;i<playerCount;i++){
-            for(int j=0;j<5;j++) {
-                player[i].hand[j]=talia.deck[currentCard];
-                currentCard++;
+            if(player[i].inGame) {
+                for (int j = 0; j < 5; j++) {
+                    player[i].hand[j] = talia.deck[currentCard];
+                    currentCard++;
+                }
             }
-        }
-        for(int i=0;i<4;i++){
-            player[i].showHand();
         }
     }
 
@@ -39,15 +38,52 @@ public class Table {
             if(response == -1){
                 // TODO: 26.11.2022
                 // ZABICIE GRACZA, GDY NIE MA HAJSU
+                player[i].inGame=false;
             }
         }
     }
 
+    public void showInfo(){
+        //TODO: ma wyslac graczowi ilosc bobux kazdego gracza, oraz jego karty
+        for(int i = 0; i < playerCount; i++){
+            if(player[i].inGame){
+                player[i].showHand();
+            }
+        }
+    }
+    public void bettingPhase(Game game){
+        int calls = 0;
+        int players = game.activePlayerCount;
+        int turn = dealer;
+        String response;
+        while(calls != players){
+            if(game.betPerPlayer[turn]!=-1) {
+                System.out.println("calls: " + calls + " players: " + players);
+                response = askForInputs(game, turn);
+                switch (response) {
+                    case "called" -> calls++;
+                    case "betted" -> calls = 1;
+                    case "folded" -> players--;
+                }
+            }
+            turn = (turn+1) % playerCount;
+        }
+    }
+    public String askForInputs(Game game, int id){
+        return player[id].input(game);
+    }
+
     public void play(){
-        deck.shuffle();
-        deal(deck);
+        //Setting the table phase
         Game game = new Game(playerCount, ante);
         takeAntesFromPlayers(game);
-
+        deck.shuffle();
+        deal(deck);
+        showInfo();
+        //First betting phase
+        bettingPhase(game);
+        //Card exchange phase
+        //Second betting phase
+        //Comparison and results phase
     }
 }

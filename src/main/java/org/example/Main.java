@@ -5,8 +5,6 @@ public class Main {
 
         int liczbaGraczy = 4;
         Table stolik = new Table(liczbaGraczy);
-        while (true){
-            stolik.play();
-        }
+        stolik.play();
     }
 }

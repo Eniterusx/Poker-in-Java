@@ -28,7 +28,7 @@ public class Deck {
 
     public void showOrder(){
         for(int i=0;i<52;i++){
-            deck[i].equals();
+            deck[i].equals(i);
         }
     }
 }
