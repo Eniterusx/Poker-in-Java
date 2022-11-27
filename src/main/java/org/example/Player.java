@@ -7,7 +7,7 @@ public class Player {
     public int position;
     public int balance;
     public boolean inGame;
-
+    public boolean allIn;
     public Player(int o){
         position = o;
         for(int i=0;i<5;i++){
@@ -15,6 +15,7 @@ public class Player {
         }
         balance = 1000;
         inGame = true;
+        allIn = false;
     }
 
     //for tests only
@@ -149,52 +150,47 @@ public class Player {
                     if (response == 0) {
                         return "called";
                     } else {
-                        System.out.println("You don't have enough money to call, folding " +
-                                "instead because all-in is a lame mechanic, therefore I refuse to implement it");
-                        return "folded";
+                        System.out.println("You don't have enough money to call, you can only go allin");
+                        return "allin";
                     }
 
                 }
                 case "bet" -> {
+                    String betString;
                     int flag = 0;
-                    int flag2 = 0;
-                    while(true) {
-                        String betString;
-                        int playerBet = -1;
-
-                        while (playerBet == -1) {
-                            if(arr.length > 1 && flag == 0){
-                                betString = arr[1];
-                                flag = 1;}
-                            else{
-                                if(flag2 == 0) {
-                                    System.out.println("How much do you want to raise the current pot?");
-                                    flag2 = 1;
-                                }
-                                betString = input.nextLine();
-                            }
-                            try {
-                                playerBet = Integer.parseInt(betString);
-                            } catch (Exception e) {
-                                System.out.println("Insert a number");
-                            }
+                    int playerBet = -1;
+                    if(arr.length > 1) {
+                        betString = arr[1];
+                        try {
+                            playerBet = Integer.parseInt(betString);
+                        } catch (Exception e) {
+                            System.out.println("Insert a number");
+                            flag = 1;
                         }
-                        if(playerBet > 0) {
-                            response = game.bet(this, playerBet);
-                            if (response == 0) {
-                                return "betted";
-                            } else {
-                                System.out.println("You don't have enough, try again");
-                                playerBet = -1;
-                            }
-                        } else System.out.println("Enter a positive number");
                     }
+                    else {
+                        System.out.println("Usage: \"bet *number*\"");
+                        flag = 1;
+                    }
+                    if(playerBet > 0) {
+                        response = game.bet(this, playerBet);
+                        if (response == 0) {
+                            return "betted";
+                        } else {
+                            System.out.println("You don't have enough, try again");
+                            playerBet = -1;
+                        }
+                    } else if (flag == 0) System.out.println("Enter a positive number");
                 }
                 case "fold" -> {
                     System.out.println("FOLDED");
                     response = game.fold(this);
                     return "folded";
                 }
+                case "allin" -> {
+                    System.out.println("boże święty");
+                }
+
                 case "info" -> {
                     System.out.print("Your ₿obux: " + balance);
                     System.out.print(", Bet: ");

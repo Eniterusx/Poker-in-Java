@@ -56,7 +56,7 @@ public class Table {
         int turn = dealer;
         String response;
         while(calls != players){
-            if(game.betPerPlayer[turn]!=-1) {
+            if(game.betPerPlayer[turn]!=-1 && player[turn].inGame) {
                 response = player[turn].input(game, table);
                 switch (response) {
                     case "called" -> calls++;
@@ -72,7 +72,7 @@ public class Table {
         int id;
         for(int i = 0; i < playerCount; i++){
             id = (i+dealer)%playerCount;
-            if (game.betPerPlayer[id]!=-1){
+            if (game.betPerPlayer[id]!=-1 && player[id].inGame){
                 int exchangedAmount;
                 exchangedAmount = player[id].exchange(deck, cards_dealt);
                 cards_dealt += exchangedAmount;
@@ -83,7 +83,7 @@ public class Table {
     public void comparisonPhase(Game game){
         int[][] results = new int [playerCount][2];
         for(int i = 0; i < playerCount; i++){
-            if(game.betPerPlayer[i]!=-1){
+            if(game.betPerPlayer[i]!=-1 && player[i].inGame){
                 results[i][0] = player[i].rateHand();
             }
             else results[i][0] = -1;
@@ -124,18 +124,36 @@ public class Table {
             System.out.println("We have a tie between " + winners + " players!");
             System.out.println("The pot of " + game.totalBet + " ₿obux is going to be split between all of them");
         }
-        splitMoney(winners, winners_id, game);
+        int sidePot = 0;
+        while(game.totalBet>0){
+            if(winners==1){
+                if(!player[winners_id[0]].allIn){
+                    sidePot = game.totalBet;
+                }
+                else{
+                    sidePot = game.betPerPlayer[winners_id[0]];
+                    for(int i = 0; i < playerCount; i++){
+                        if(game.betPerPlayer[i]>0){
+                            int x = Math.min(game.betPerPlayer[i], game.betPerPlayer[winners_id[0]]);
+                            sidePot += x;
+                            game.betPerPlayer[winners_id[0]] -= x;
+                        }
+                    }
+                }
+            }
+        }
+        splitMoney(winners, winners_id, sidePot, game);
     }
 
-    public void splitMoney(int w, int[] id, Game game) {
+    public void splitMoney(int w, int[] id, int split, Game game) {
         int extra = 0;
-        if (game.totalBet % w != 0) {
-            extra = game.totalBet % w;
-            game.totalBet -= extra;
+        if (split % w != 0) {
+            extra = split % w;
+            split -= extra;
         }
         for (int j : id) {
             if (j != -1) {
-                player[j].balance += game.totalBet / w;
+                player[j].balance += split / w;
             }
         }
         while (extra>0) {
@@ -181,5 +199,6 @@ public class Table {
             //Comparison and results phase
             comparisonPhase(game);
         }
+        System.out.println("GG, wygrala twoja stara");
     }
 }
