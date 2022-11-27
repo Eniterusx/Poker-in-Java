@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 public class Table {
@@ -37,32 +39,25 @@ public class Table {
     public void takeAntesFromPlayers(Game game){
         int response;
         for(int i = 0; i < playerCount; i++){
-            response = game.payAnte(player[i]);
-            if(response == -1){
-                // TODO: 26.11.2022
-                // ZABICIE GRACZA, GDY NIE MA HAJSU
-                player[i].inGame=false;
+            if(player[i].inGame) {
+                response = game.payAnte(player[i]);
+                if (response == -1) {
+                    // TODO: 26.11.2022
+                    // ZABICIE GRACZA, GDY NIE MA HAJSU
+                    player[i].inGame = false;
+                }
             }
         }
     }
 
-    public void showInfo(){
-        //TODO: ma wyslac graczowi ilosc bobux kazdego gracza, oraz jego karty
-        for(int i = 0; i < playerCount; i++){
-            if(player[i].inGame){
-                player[i].showHand();
-            }
-        }
-    }
-    public void bettingPhase(Game game){
+    public void bettingPhase(Game game, Table table){
         int calls = 0;
         int players = game.activePlayerCount;
         int turn = dealer;
         String response;
         while(calls != players){
             if(game.betPerPlayer[turn]!=-1) {
-                System.out.println("calls: " + calls + " players: " + players);
-                response = player[turn].input(game);
+                response = player[turn].input(game, table);
                 switch (response) {
                     case "called" -> calls++;
                     case "betted" -> calls = 1;
@@ -94,26 +89,97 @@ public class Table {
             else results[i][0] = -1;
             results[i][1] = i;
         }
-        //TODO: porownac wyniki
 
+        Arrays.sort(results, Comparator.comparingInt(a -> a[0]));
+        int len = results.length;
+        for (int[] result : results) {
+            for (int i : result) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+        int winners = 1;
+        int[] winners_id = new int[4];
+        for(int i = 0; i < 4; i++){
+            winners_id[i] = -1;
+        }
+        winners_id[0]=results[len-1][1];
+        if(results[len-1][0]==results[len-2][0]){
+            winners = 2;
+            winners_id[1] = results[len-2][1];
+            if(playerCount>2 && results[len-1][0]==results[len-3][0]) {
+                winners = 3;
+                winners_id[2] = results[len - 3][1];
+                if (playerCount>3 && results[len - 1][0] == results[len - 4][0]) {
+                    winners = 4;
+                    winners_id[3] = results[len - 4][1];
+                }
+            }
+        }
+        if(winners==1){
+            System.out.println("Player " + (winners_id[0]+1) + " has won!");
+            System.out.println("He gets the pot of " + game.totalBet + " ₿obux!");
+        }
+        else{
+            System.out.println("We have a tie between " + winners + " players!");
+            System.out.println("The pot of " + game.totalBet + " ₿obux is going to be split between all of them");
+        }
+        splitMoney(winners, winners_id, game);
+    }
+
+    public void splitMoney(int w, int[] id, Game game) {
+        int extra = 0;
+        if (game.totalBet % w != 0) {
+            extra = game.totalBet % w;
+            game.totalBet -= extra;
+        }
+        for (int j : id) {
+            if (j != -1) {
+                player[j].balance += game.totalBet / w;
+            }
+        }
+        while (extra>0) {
+            int iterator;
+            for (int i = 0; i < playerCount; i++) {
+                iterator = (i + dealer) % playerCount;
+                for (int j = 0; j < id.length; j++) {
+                    if (iterator == id[j]) {
+                        player[iterator].balance += 1;
+                        extra -= 1;
+                    }
+                }
+            }
+        }
+    }
+
+    public int playersLeft(){
+        int a = 0;
+        for(int i = 0; i<playerCount; i++){
+            if (player[i].inGame){
+                a++;
+            }
+        }
+        return a;
     }
     
     public void play(){
-        //Setting the table phase
-        Game game = new Game(playerCount, ante);
-        takeAntesFromPlayers(game);
-        deck.shuffle();
-        //to usun
-        deck.showOrder();
-        deal(deck);
-        showInfo();
-        //First betting phase
-        bettingPhase(game);
-        //Card exchange phase
-        exchangePhase(deck, game);
-        //Second betting phase
-        bettingPhase(game);
-        //Comparison and results phase
-        comparisonPhase(game);
+        while(playersLeft()>1) {
+            //Setting the table phase
+            Game game = new Game(playerCount, ante);
+            takeAntesFromPlayers(game);
+            cards_dealt = 0;
+            deck.shuffle();
+            // deck.showOrder();
+            deal(deck);
+            // showInfo();
+            //First betting phase
+            bettingPhase(game, this);
+            //Card exchange phase
+            exchangePhase(deck, game);
+            //Second betting phase
+            bettingPhase(game, this);
+            //Comparison and results phase
+            comparisonPhase(game);
+        }
     }
 }

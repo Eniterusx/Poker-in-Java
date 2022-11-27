@@ -38,10 +38,11 @@ public class Game {
     }
 
     public int bet(Player p, int bettingAmount){
-        if (p.balance >= bettingAmount){
-            betPerPlayer[p.position] += bettingAmount;
-            p.balance -= bettingAmount;
-            totalBet += bettingAmount;
+        int amountToBet = currentBet - betPerPlayer[p.position] + bettingAmount;
+        if (p.balance >= amountToBet && bettingAmount > 0){
+            betPerPlayer[p.position] += amountToBet;
+            p.balance -= amountToBet;
+            totalBet += amountToBet;
             currentBet = betPerPlayer[p.position];
             return 0;
         }

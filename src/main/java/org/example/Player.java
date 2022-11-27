@@ -7,6 +7,7 @@ public class Player {
     public int position;
     public int balance;
     public boolean inGame;
+
     public Player(int o){
         position = o;
         for(int i=0;i<5;i++){
@@ -22,7 +23,7 @@ public class Player {
     }
 
     public void showHand(){
-        System.out.println("Ręka gracza " + (position+1) + ":");
+        System.out.println("Your hand:");
         for(int i=0;i<5;i++){
             hand[i].equals(i);
         }
@@ -131,41 +132,86 @@ public class Player {
         else return 10000 + 100 * highestCard;
     }
 
-    public String input(Game game){
+    public String input(Game game, Table table){
         //wysyła karty gracza, jego hajs, stawki i hajs wszystkich graczy oraz czy spasowali
         //komendy: call, bet, fold, dodać komendę info, pokazującą shit znowu
         Scanner input = new Scanner(System.in);
-        System.out.println("Your turn, player " + position + "!");
+        System.out.println("Your turn, Player " + (position+1) + "!");
+        showHand();
         int response;
         while(true){
-            String command = input.next();
-            switch (command) {
+            String command = input.nextLine();
+            String[] arr = command.split(" +");
+            switch (arr[0]) {
                 case "call" -> {
                     response = game.call(this);
                     System.out.println("CALLED");
-                    //TODO: jeśli response jest błędny, poproś jeszcze raz (ale przy call to raczej nie trzeba(?)
-                    return "called";
+                    if (response == 0) {
+                        return "called";
+                    } else {
+                        System.out.println("You don't have enough money to call, folding " +
+                                "instead because all-in is a lame mechanic, therefore I refuse to implement it");
+                        return "folded";
+                    }
+
                 }
                 case "bet" -> {
-                    System.out.println("How much do you want to raise the current pot?");
-                    String betString;
-                    int playerBet = -1;
-                    while (playerBet == -1) {
-                        betString = input.next();
-                        try {
-                            playerBet = Integer.parseInt(betString);
-                        } catch (Exception e) {
-                            System.out.println("Insert a number");
+                    int flag = 0;
+                    int flag2 = 0;
+                    while(true) {
+                        String betString;
+                        int playerBet = -1;
+
+                        while (playerBet == -1) {
+                            if(arr.length > 1 && flag == 0){
+                                betString = arr[1];
+                                flag = 1;}
+                            else{
+                                if(flag2 == 0) {
+                                    System.out.println("How much do you want to raise the current pot?");
+                                    flag2 = 1;
+                                }
+                                betString = input.nextLine();
+                            }
+                            try {
+                                playerBet = Integer.parseInt(betString);
+                            } catch (Exception e) {
+                                System.out.println("Insert a number");
+                            }
                         }
+                        if(playerBet > 0) {
+                            response = game.bet(this, playerBet);
+                            if (response == 0) {
+                                return "betted";
+                            } else {
+                                System.out.println("You don't have enough, try again");
+                                playerBet = -1;
+                            }
+                        } else System.out.println("Enter a positive number");
                     }
-                    response = game.bet(this, playerBet);
-                    //TODO: jeśli response jest błędny, poproś jeszcze raz
-                    return "betted";
                 }
                 case "fold" -> {
                     System.out.println("FOLDED");
                     response = game.fold(this);
                     return "folded";
+                }
+                case "info" -> {
+                    System.out.print("Your ₿obux: " + balance);
+                    System.out.print(", Bet: ");
+                    if(game.betPerPlayer[position]!=-1)
+                        System.out.println(game.betPerPlayer[position]);
+                    else System.out.println("FOLDED");
+                    for(int i = 0; i< game.playerCount; i++){
+                        if(i!=position  && table.player[i].inGame){
+                            System.out.print("[Player " + (i+1) + "] ₿obux: " + table.player[i].balance);
+                            System.out.print(", " + (i+1) + " Bet: ");
+                            if(game.betPerPlayer[i]!=-1)
+                                System.out.println(game.betPerPlayer[i]);
+                            else System.out.println("FOLDED LMAO CRINGE NOOB NO BALLZ");
+                        }
+                    }
+                    System.out.println("Current pot: " + game.currentBet);
+                    System.out.println("Total pot: " + game.totalBet);
                 }
                 default -> System.out.println("Invalid command, try again");
             }
@@ -180,7 +226,7 @@ public class Player {
         String exchangedString;
         Scanner input = new Scanner(System.in);
         while (amountExchanged == -1) {
-            exchangedString = input.next();
+            exchangedString = input.nextLine();
             try {
                 amountExchanged = Integer.parseInt(exchangedString);
             } catch (Exception e) {
