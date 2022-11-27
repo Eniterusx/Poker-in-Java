@@ -3,7 +3,6 @@ package org.example;
 public class Game {
     public int playerCount;
     public int activePlayerCount;
-    public int notFoldedPlayers;
     public int totalBet;
     public int currentBet;
     public int ante;

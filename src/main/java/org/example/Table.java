@@ -6,8 +6,9 @@ public class Table {
     public Deck deck;
     public int playerCount;
     public Player[] player;
-    public int ante = 25;
+    public int ante = 20;
     public int dealer;
+    public int cards_dealt;
     Table(int l){
         Random rand = new Random();
         deck = new Deck();
@@ -17,6 +18,7 @@ public class Table {
             player[i]=new Player(i);
         }
         dealer = rand.nextInt(playerCount);
+        cards_dealt = 0;
     }
 
     public void deal(Deck talia){
@@ -24,8 +26,9 @@ public class Table {
         for(int i=0;i<playerCount;i++){
             if(player[i].inGame) {
                 for (int j = 0; j < 5; j++) {
-                    player[i].hand[j] = talia.deck[currentCard];
+                    player[i].hand[j] = talia.card[currentCard];
                     currentCard++;
+                    cards_dealt++;
                 }
             }
         }
@@ -59,7 +62,7 @@ public class Table {
         while(calls != players){
             if(game.betPerPlayer[turn]!=-1) {
                 System.out.println("calls: " + calls + " players: " + players);
-                response = askForInputs(game, turn);
+                response = player[turn].input(game);
                 switch (response) {
                     case "called" -> calls++;
                     case "betted" -> calls = 1;
@@ -69,21 +72,48 @@ public class Table {
             turn = (turn+1) % playerCount;
         }
     }
-    public String askForInputs(Game game, int id){
-        return player[id].input(game);
-    }
 
+    public void exchangePhase(Deck deck, Game game){
+        int id;
+        for(int i = 0; i < playerCount; i++){
+            id = (i+dealer)%playerCount;
+            if (game.betPerPlayer[id]!=-1){
+                int exchangedAmount;
+                exchangedAmount = player[id].exchange(deck, cards_dealt);
+                cards_dealt += exchangedAmount;
+            }
+        }
+    }
+    
+    public void comparisonPhase(Game game){
+        int[][] results = new int [playerCount][2];
+        for(int i = 0; i < playerCount; i++){
+            if(game.betPerPlayer[i]!=-1){
+                results[i][0] = player[i].rateHand();
+            }
+            else results[i][0] = -1;
+            results[i][1] = i;
+        }
+        //TODO: porownac wyniki
+
+    }
+    
     public void play(){
         //Setting the table phase
         Game game = new Game(playerCount, ante);
         takeAntesFromPlayers(game);
         deck.shuffle();
+        //to usun
+        deck.showOrder();
         deal(deck);
         showInfo();
         //First betting phase
         bettingPhase(game);
         //Card exchange phase
+        exchangePhase(deck, game);
         //Second betting phase
+        bettingPhase(game);
         //Comparison and results phase
+        comparisonPhase(game);
     }
 }

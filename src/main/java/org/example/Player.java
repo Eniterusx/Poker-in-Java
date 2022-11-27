@@ -16,6 +16,7 @@ public class Player {
         inGame = true;
     }
 
+    //for tests only
     protected void swapCard(int id, Card new_card){
         hand[id] = new_card;
     }
@@ -169,5 +170,62 @@ public class Player {
                 default -> System.out.println("Invalid command, try again");
             }
         }
+    }
+
+    public int exchange(Deck deck, int cards_dealt){
+        System.out.println("Exchange phase");
+        showHand();
+        System.out.println("How many cards do you want to exchange?");
+        int amountExchanged = -1;
+        String exchangedString;
+        Scanner input = new Scanner(System.in);
+        while (amountExchanged == -1) {
+            exchangedString = input.next();
+            try {
+                amountExchanged = Integer.parseInt(exchangedString);
+            } catch (Exception e) {
+                System.out.println("Insert a number!");
+            }
+            if(amountExchanged < 0 || amountExchanged > 5){
+                amountExchanged = -1;
+                System.out.println("Insert a number between 0 and 5");
+            }
+        }
+        System.out.println("Exchanging " + amountExchanged + " cards");
+        int[] exchanged = new int[5];
+        for(int i = 0; i<5; i++){
+            exchanged[i]=0;
+        }
+        int cardID = -1;
+        for(int i = 0; i < amountExchanged; i++){
+            while(cardID==-1) {
+                System.out.println("Enter the ID of the card you want to exchange (" + (amountExchanged-i) + " left)");
+                exchangedString = input.next();
+                try {
+                    cardID = Integer.parseInt(exchangedString);
+                } catch (Exception e) {
+                    System.out.println("Insert a number!");
+                }
+                if (cardID < 0 || cardID > 4) {
+                    cardID = -1;
+                    System.out.println("Insert a number between 0 and 4");
+                }
+                else if (exchanged[cardID] == 1){
+                    System.out.println("You have already decided to exchange this card");
+                }
+            }
+            exchanged[cardID]=1;
+            cardID=-1;
+        }
+        int id = cards_dealt;
+        for(int i = 0; i<5; i++){
+            if(exchanged[i] == 1){
+                hand[i] = deck.card[id];
+                id++;
+            }
+        }
+        System.out.println("This is your new hand:");
+        showHand();
+        return amountExchanged;
     }
 }
